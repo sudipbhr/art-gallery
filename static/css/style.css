@@ -1,0 +1,38 @@
+.bg-dark {
+    background-color: #4f8c86 !important;
+}
+
+.cart-total {
+    display: block;
+    color: white;
+    background-color: red;
+    border-radius: 50%;
+    width: 20px;
+    text-align: center;
+    margin-left: 2px;
+}
+
+.box {
+    padding: 10px;
+    box-shadow: 5px 5px 8px grey;
+    margin: 20px;
+}
+
+.quantity {
+    display: inline-block;
+    font-size: 18px;
+    margin-top: 2px;
+}
+
+.chg-quantity {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    cursor: pointer;
+    margin-left: 3px;
+}
+
+.cart-img {
+    height: 80px;
+    width: 80px;
+}

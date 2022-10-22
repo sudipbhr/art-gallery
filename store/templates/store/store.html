@@ -1,0 +1,26 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+  <div class="container">
+      <div class="card-deck mt-2 mb-3 text-center">
+        <div class="row">
+            {% for product in products %}
+            <div class="col-md-3">
+                <div class="card box-shadow">
+                    <div class="card-header">
+                        <img class="img-thumbnail" src="{{ product.imageURL }}" style="height:195px;width:195px" alt="">
+                    </div>
+                    <div class="card-body">
+                        <h5>{{product.name}}</h5>
+                        <a href="{% url 'add-to-cart' product.id %}">Add </a>
+                        {% comment %} <button data-product="{{product.id}}" data-action="add" class="d-inline btn btn-outline-primary float-left update-cart">Add to cart</button> {% endcomment %}
+                        <button class="d-inline btn btn-success block float-right">View</button><br><br>
+                        <h4 class="d-inline card-title pricing-card-title">${{product.price}}</h4>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+      </div>
+{% endblock %}
