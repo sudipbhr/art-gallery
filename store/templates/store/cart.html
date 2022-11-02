@@ -13,7 +13,7 @@
         <table class="table">
             <tr>
                 <td>Items: {{ order.get_total }}</td>
-                <td>Total: {{order.get_cart_total}}
+                <td>Total: {{order.get_cart_total | floatformat:2}}
                     
                 </td>
                 <td>

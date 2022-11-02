@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponse
 from .models import *
@@ -7,18 +8,19 @@ from .models import *
 # Create your views here.
 def store(request):
     if request.user.is_authenticated:
-        customer=request.user.customer
+        customer=request.user
         order, created = Order.objects.get_or_create(customer=customer, complete=False)
         items= order.orderitem_set.all()
     else:
         items=[]
         order =''
-    products= Product.objects.all()
+    products = Product.objects.all()
     context={
         'products':products,
         }
     return render(request, 'store/store.html', context)
-
+    
+@login_required(login_url='login')
 def cart(request):
     if request.user.is_authenticated:
         customer=request.user.customer
@@ -34,6 +36,26 @@ def cart(request):
         }
     return render(request,'store/cart.html', context)
 
+
+def categoryView(request, cat_name):
+    category=Category.objects.get(cat_name=cat_name)
+    items= Product.objects.filter(category=category)
+    context={
+        'products':items
+    }
+    messages.info(request, "Results for category "+'"'+cat_name+'"')
+    return render(request, 'store/store.html', context)
+    
+def search(request):
+    term= request.GET.get("search")
+    product = Product.objects.filter(name__icontains=term)
+    context={
+        'products':product
+    }
+    messages.info(request, "Results for "+'"'+term+'"')
+    return render(request, 'store/store.html', context)
+
+@login_required(login_url='login')
 def checkout(request):
     if request.user.is_authenticated:
         customer=request.user.customer
@@ -48,7 +70,7 @@ def checkout(request):
         }
     return render(request,'store/checkout.html', context)
     
-
+@login_required(login_url='login')
 def add(request, product_id):
     order_no = Order.objects.filter(customer=request.user.customer).first()
     p_id = get_object_or_404(Product, id=product_id)
@@ -60,9 +82,7 @@ def add(request, product_id):
     messages.success(request, "Item added to card successfully")
     return redirect('/cart/')
 
-# def updateItem(request):
-#     return JsonResponse("Item is added", safe=False)
-
+@login_required(login_url='login')
 def increaseQuantity(request, id):
     try:
         productExits = OrderItem.objects.get(id=id)
@@ -74,7 +94,7 @@ def increaseQuantity(request, id):
         messages.error(request, "Invalid Access")
     return redirect('/cart/')
 
-
+@login_required(login_url='login')
 def decreaseQuantity(request, id):
     try:
         productExits = OrderItem.objects.get(id=id)
@@ -86,6 +106,7 @@ def decreaseQuantity(request, id):
         messages.error(request, "Invalid Access")
     return redirect('/cart/')
 
+@login_required(login_url='login')
 def remove_from_cart(request, id):
     order_no= Order.objects.filter(customer=request.user.customer).first()
     p_id = get_object_or_404(Product, id=id)
