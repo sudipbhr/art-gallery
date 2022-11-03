@@ -1,6 +1,6 @@
 {% extends 'store/main.html' %}
 {% load static %}
-{% block content %}
+{% block content %}        
         <div class="row text-center mt-2 mb-3 card-deck">
             {% for product in products %}
             <div class="col-md-3">
@@ -9,11 +9,12 @@
                         <img class="img-thumbnail" src="{{ product.imageURL }}" style="height:195px;width:195px" alt="">
                     </div>
                     <div class="card-body">
-                        <h5>{{product.name}}</h5>
-                        <a href="{% url 'add-to-cart' product.id %}">Add </a>
-                        {% comment %} <button data-product="{{product.id}}" data-action="add" class="d-inline btn btn-outline-primary float-left update-cart">Add to cart</button> {% endcomment %}
-                        <button class="d-inline btn btn-success block float-right">View</button><br><br>
+                        <h5>{{product.name|truncatechars:22}}</h5>
+                        <div class="d-flex justify-content-between">
+                            <a class="btn btn-outline-success" href="{% url 'add-to-cart' product.id %}">Add </a>    
+                        <a class="d-inline btn btn-outline-info block" href="{% url 'product-detail' product.id %}">View </a>                   
                         <h4 class="d-inline card-title pricing-card-title">${{product.price}}</h4>
+                        </div>
                     </div>
                 </div>
             </div>

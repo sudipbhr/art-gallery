@@ -19,11 +19,20 @@ def store(request):
         'products':products,
         }
     return render(request, 'store/store.html', context)
+
+
+def product_detail(request, id):
+    product=Product.objects.get(id=id)
+    context={
+        'product':product
+    }
+    template='store/product-detail.html'
+    return render(request,template, context)
     
 @login_required(login_url='login')
 def cart(request):
     if request.user.is_authenticated:
-        customer=request.user.customer
+        customer=request.user
         order, created = Order.objects.get_or_create(customer=customer, complete=False)
         items= order.orderitem_set.all()
         count= items.count()
@@ -58,7 +67,7 @@ def search(request):
 @login_required(login_url='login')
 def checkout(request):
     if request.user.is_authenticated:
-        customer=request.user.customer
+        customer=request.user
         order, created = Order.objects.get_or_create(customer=customer, complete=False)
         items= order.orderitem_set.all()
     else:
@@ -69,10 +78,18 @@ def checkout(request):
         'order':order
         }
     return render(request,'store/checkout.html', context)
-    
+
+def process_trans(request):
+    transcation=request.GET.get('transcation_id', None)
+    order_no= request.GET.get('order_id', None)
+    items=OrderItem.objects.get(order_id=order_no)
+    items.delete()
+    return redirect('/store/')
+
+
 @login_required(login_url='login')
 def add(request, product_id):
-    order_no = Order.objects.filter(customer=request.user.customer).first()
+    order_no = Order.objects.filter(customer=request.user).first()
     p_id = get_object_or_404(Product, id=product_id)
     orderitem, created = OrderItem.objects.get_or_create(order = order_no, product = p_id)
     pre_quantity= orderitem.quantity
@@ -108,7 +125,7 @@ def decreaseQuantity(request, id):
 
 @login_required(login_url='login')
 def remove_from_cart(request, id):
-    order_no= Order.objects.filter(customer=request.user.customer).first()
+    order_no= Order.objects.filter(customer=request.user).first()
     p_id = get_object_or_404(Product, id=id)
     order = OrderItem.objects.get(product=p_id, order=order_no)
     order.delete()

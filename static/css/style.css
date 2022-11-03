@@ -1,5 +1,5 @@
 .bg-dark {
-    background-color: #4f8c86 !important;
+    background-color: #3b5f5c !important;
 }
 
 .cart-total {
@@ -35,4 +35,24 @@
 .cart-img {
     height: 80px;
     width: 80px;
+}
+
+.carousel {
+    margin-top: 20px;
+    transition: all 0.3s ease;
+}
+
+.carousel img {
+    width: 100%;
+    transition: all 0.3s ease;
+    border: 8px solid white;
+}
+
+.item {
+    position: absolute;
+    display: none;
+}
+
+.main {
+    display: block;
 }

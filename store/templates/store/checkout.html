@@ -19,10 +19,6 @@
                 <td>${{item.product.price}}</td>
                 <td>
                     <p class="quantity">{{item.quantity}}</p>
-                    <div class="quantity">
-                        <i class="fas fa-caret-up chg-quantity"></i>
-                        <i class="fas fa-caret-down chg-quantity"></i>
-                    </div>
                 </td>
                 <td>${{item.get_total | floatformat:2}}</td>
             </tr>
@@ -37,40 +33,80 @@
                 <div class="form-row">
                     <div class="form-group col-md-6">
                     <label for="inputEmail4">Name</label>
-                    <input type="text" class="form-control" id="" placeholder="Name">
+                    <input type="text" class="form-control" value={{request.user}} placeholder="Name">
                     </div>
                     <div class="form-group col-md-6">
                     <label for="inputPassword4">Email</label>
-                    <input type="email" class="form-control" id="inputEmail4" placeholder="Email address">
+                    <input type="email" class="form-control" value={{request.user.email}} id="inputEmail4" placeholder="Email address">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputAddress">Address</label>
-                    <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St">
+                    <input type="text" class="form-control" required id="inputAddress" placeholder="1234 Main St">
                 </div>
                 <div class="form-group">
                     <label for="inputAddress2">Address 2</label>
-                    <input type="text" class="form-control" id="inputAddress2" placeholder="Apartment, studio, or floor">
+                    <input type="text" class="form-control" required id="inputAddress2" placeholder="Apartment, studio, or floor">
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-6">
                     <label for="inputCity">City</label>
                     <input type="text" class="form-control" id="inputCity">
                     </div>
-                    <div class="form-group col-md-4">
-                    <label for="inputState">State</label>
-                    <select id="inputState" class="form-control">
-                        <option selected>Choose...</option>
-                        <option>...</option>
-                    </select>
-                    </div>
-
                 </div>
-                <button type="submit" class="btn btn-primary">Continue</button>
-            </form>
-
+            
       </div>
+          <!-- Set up a container element for the button -->
+    <div id="paypal-button-container"></div>
+
+    <!-- Include the PayPal JavaScript SDK -->
+    <script src="https://www.paypal.com/sdk/js?client-id=AbMFaqj6_QoGF3fpAiy5VL6xvzKMscmTeBj04V9O9OPCsI8NmFc89Iz8OZSm_X53kNYKQX9mcCgiytrV&currency=USD"></script>
+
+    <script>
+        var order='{{order.id}}'
+        // Render the PayPal button into #paypal-button-container
+        paypal.Buttons({
+
+            // Set up the transaction
+            createOrder: function(data, actions) {
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: '{{order.get_cart_total}}'
+                        }
+                    }]
+                });
+            },
+
+            // Finalize the transaction
+            onApprove: function(data, actions) {
+                return actions.order.capture().then(function(orderData) {
+                    // Successful capture! For demo purposes:
+                    console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+                    var transaction = orderData.purchase_units[0].payments.captures[0];
+                    alert('Transaction '+ transaction.status + ': ' + transaction.id );
+                    $.ajax({
+                            type: "GET",
+                            url: '/checkout/process_trans',
+                            data: {
+                                "transcation_id":transaction.id,
+                                "order_id":order,
+                            },
+                            dataType:"json",
+                            success: function(data){
+                                alert("Successful")
+                            },
+                            failure:function(){
+                                alert("failure");
+                            }
+                        });
+                });
+            }
+        }).render('#paypal-button-container');
+    </script>
+           </form>
     </div>
+    
   </div>
 {% endblock %}
 
