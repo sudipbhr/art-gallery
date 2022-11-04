@@ -81,10 +81,9 @@
             // Finalize the transaction
             onApprove: function(data, actions) {
                 return actions.order.capture().then(function(orderData) {
+                    console.log(orderData)
                     // Successful capture! For demo purposes:
-                    console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
                     var transaction = orderData.purchase_units[0].payments.captures[0];
-                    alert('Transaction '+ transaction.status + ': ' + transaction.id );
                     $.ajax({
                             type: "GET",
                             url: '/checkout/process_trans',
@@ -94,13 +93,14 @@
                             },
                             dataType:"json",
                             success: function(data){
-                                alert("Successful")
+                                window.location.href = '/'
                             },
                             failure:function(){
                                 alert("failure");
                             }
                         });
                 });
+                window.location.href = '/';
             }
         }).render('#paypal-button-container');
     </script>

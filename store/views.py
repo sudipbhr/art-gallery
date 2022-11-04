@@ -84,7 +84,7 @@ def process_trans(request):
     order_no= request.GET.get('order_id', None)
     items=OrderItem.objects.get(order_id=order_no)
     items.delete()
-    return redirect('/store/')
+    return redirect('/')
 
 
 @login_required(login_url='login')
